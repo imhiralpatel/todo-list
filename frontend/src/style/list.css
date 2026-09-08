@@ -1,0 +1,39 @@
+/* List.css */
+
+table {
+    width: 80%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+    background-color: #2563eb;
+    color: white;
+}
+
+th,
+td {
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+tbody tr:hover {
+    background-color: #eaf2ff;
+}
+
+td:first-child,
+th:first-child {
+    width: 80px;
+    text-align: center;
+}
