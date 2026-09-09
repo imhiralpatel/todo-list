@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTodoController, getTodosController } from "../controllers/todo.controller";
+import { createTodoController, deleteAllTodosController, deleteTodoController, getTodoByIdController, getTodosController, updateTodoController } from "../controllers/todo.controller";
 
 const router = Router();
 
@@ -8,5 +8,23 @@ router.post("/", createTodoController);
 
 // GET /api/todos
 router.get("/", getTodosController);
+
+
+// SELECT SINGLE
+router.get("/:id", getTodoByIdController);
+
+
+// UPDATE
+router.put("/:id", updateTodoController);
+
+
+// DELETE ALL
+router.delete("/", deleteAllTodosController);
+
+
+// DELETE SINGLE
+router.delete("/:id", deleteTodoController);
+
+
 
 export default router;
