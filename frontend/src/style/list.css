@@ -72,13 +72,10 @@ th:first-child {
     background-color: rgb(10, 10, 247);
 }
 
-.delete-all{
-    width: 30%;
-    padding: 6px;
-    background-color: red;
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 14px;
+.delete-selected{
+    width: 200px;
+}
+.list-container{
+    margin-left: 20px;
+    margin-right: 20px;
 }

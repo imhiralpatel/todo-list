@@ -18,6 +18,75 @@ interface ApiResponse {
 function List() {
     const [taskData, setTaskData] = useState<Task[]>([]);
 
+    const [selectedTask, setSelectedTask] = useState<number[]>([]);
+
+    const selectAllTask = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+            let items = taskData.map((item) => item.Id);
+            setSelectedTask(items);
+        }
+        else {
+            setSelectedTask([]);
+        }
+    }
+
+    const selectSingleItem = (id: number) => {
+        if (selectedTask.includes(id)) {
+            let items = selectedTask.filter((item) => item !== id);
+            setSelectedTask(items);
+        }
+        else {
+            setSelectedTask([...selectedTask, id]);
+        }
+    }
+
+
+    // =========================
+    // DELETE Selecting TODO
+    // =========================
+
+    const handleDeleteSelected = async () => {
+        if (selectedTask.length === 0) {
+            alert("Please select at least one todo");
+            return;
+        }
+
+        const confirmDelete = window.confirm(
+            `Are you sure you want to delete ${selectedTask.length} todo(s)?`
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            await Promise.all(
+                selectedTask.map((id) =>
+                    fetch(`http://localhost:5000/api/todos/${id}`, {
+                        method: "DELETE",
+                    })
+                )
+            );
+
+            // UI se selected records remove
+            setTaskData((prev) =>
+                prev.filter(
+                    (item) => !selectedTask.includes(item.Id)
+                )
+            );
+
+            // Selection clear
+            setSelectedTask([]);
+
+            alert("Selected todos deleted successfully");
+
+        } catch (error) {
+            console.log("Error deleting selected todos:", error);
+            alert("Something went wrong");
+        }
+    };
+
+
     useEffect(() => {
         getListData();
     }, []);
@@ -44,13 +113,13 @@ function List() {
         }
     };
 
-    
+
     // =========================
     // DELETE SINGLE TODO
     // =========================
 
     const deleteTask = async (id: number) => {
-        
+
         const confirmDelete = window.confirm(
             "Are you sure you want to delete this todo?"
         );
@@ -88,97 +157,110 @@ function List() {
     // DELETE ALL TODOS
     // =========================
 
-    const handelDeleteAll = async () => {
-        
-        if (taskData.length === 0) {
-            alert("No todos available");
-            return;
-        }
+    // const handelDeleteAll = async () => {
 
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this todo?"
-        );
+    //     if (taskData.length === 0) {
+    //         alert("No todos available");
+    //         return;
+    //     }
 
-        if (!confirmDelete) {
-            return;
-        }
+    //     const confirmDelete = window.confirm(
+    //         "Are you sure you want to delete this todo?"
+    //     );
 
-        try {
-            const response = await fetch(`http://localhost:5000/api/todos/`, {
-                method: 'delete'
-            });
+    //     if (!confirmDelete) {
+    //         return;
+    //     }
 
-            const result = await response.json();
+    //     try {
+    //         const response = await fetch(`http://localhost:5000/api/todos/`, {
+    //             method: 'delete'
+    //         });
 
-            if (result.success) {
+    //         const result = await response.json();
 
-                // Saare todos UI se remove
-                setTaskData([]);
+    //         if (result.success) {
 
-                alert(
-                    `${result.deletedCount} todos deleted successfully`
-                );
+    //             // Saare todos UI se remove
+    //             setTaskData([]);
 
-            } else {
+    //             alert(
+    //                 `${result.deletedCount} todos deleted successfully`
+    //             );
 
-                alert(
-                    result.message || "Delete all failed"
-                );
-            }
-        }
-        catch (error) {
-            console.log("Error deleting tasks:", error);
-            alert("Something went wrong");
-        }
-    };
+    //         } else {
+
+    //             alert(
+    //                 result.message || "Delete all failed"
+    //             );
+    //         }
+    //     }
+    //     catch (error) {
+    //         console.log("Error deleting tasks:", error);
+    //         alert("Something went wrong");
+    //     }
+    // };
 
 
     return (
-        <div>
+        <div className="list-container">
             <h1>To Do List</h1>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Sr.No.</th>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
+            {
+                loading ? (
+                    <p>Loading...</p>
+                )
+                    :
+                    (
+                        <div>
+                            <button className="delete-item delete-selected" onClick={() => handleDeleteSelected()}>
+                                Delete Selected Records
+                            </button>
+                            
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" onChange={selectAllTask}></input>
+                                        </th>
+                                        <th>Sr.No.</th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
 
-                <tbody>
-                    {
-                        loading ? (
-                            <p>Loading...</p>
-                        ) 
-                        : 
-                        (
-                            taskData.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{item.Title}</td>
-                                    <td>{item.Description}</td>
-                                    <td>
-                                        {item.IsCompleted
-                                            ? "Completed"
-                                            : "Pending"}
-                                    </td>
-                                    <td>{new Date(item.CreatedAt).toLocaleDateString()}</td>
-                                    <td>
-                                        <Link to={"edit/" + item.Id} className="edit-item">Edit</Link>
-                                        <button className="delete-item" onClick={() => deleteTask(item.Id)}>Delete</button>
-                                    </td>
-                                </tr>
-                            ))
-                        )
-                    }
-                </tbody>
-            </table>
+                                <tbody>
+                                    {
+                                        taskData.map((item, index) => (
+                                            <tr key={index}>
+                                                <td>
+                                                    <input type="checkbox" onChange={() => selectSingleItem(item.Id)} checked={selectedTask.includes(item.Id)}></input>
+                                                </td>
+                                                <td>{index + 1}</td>
+                                                <td>{item.Title}</td>
+                                                <td>{item.Description}</td>
+                                                <td>
+                                                    {item.IsCompleted
+                                                        ? "Completed"
+                                                        : "Pending"}
+                                                </td>
+                                                <td>{new Date(item.CreatedAt).toLocaleDateString()}</td>
+                                                <td>
+                                                    <Link to={"edit/" + item.Id} className="edit-item">Edit</Link>
+                                                    <button className="delete-item" onClick={() => deleteTask(item.Id)}>Delete</button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
 
-            <button className="delete-all" onClick={() => handelDeleteAll()}>Delete All</button>
+                    )
+            }
 
             {/* <ul>
                 <li>Sr.No. | Title | Description</li>

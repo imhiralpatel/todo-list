@@ -81,7 +81,7 @@ export const getTodoById = async (
 
 // UPDATE TODO
 export const updateTodo = async (
-  id: number,
+  Id: number,
   data: UpdateTodoRequest
 ) => {
 
@@ -92,22 +92,22 @@ export const updateTodo = async (
     .input(
       "Id",
       sql.Int,
-      id
+      Id
     )
     .input(
       "Title",
       sql.NVarChar(200),
-      data.title ?? null
+      data.Title ?? null
     )
     .input(
       "Description",
       sql.NVarChar(1000),
-      data.description ?? null
+      data.Description ?? null
     )
     .input(
       "IsCompleted",
       sql.Bit,
-      data.completed ?? null
+      data.IsCompleted ?? null
     )
     .query(`
       UPDATE tblTodos

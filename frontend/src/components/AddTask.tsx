@@ -39,9 +39,11 @@ function AddTask() {
             </h1>
 
             <label htmlFor="">Title</label>
-            <input onChange={(event) => setTaskData({ ...taskData, title: event.target.value })} type="text" name="title" placeholder="Enter task title" />
+            <input onChange={(event) => setTaskData({ ...taskData, title: event.target.value })} 
+            type="text" name="title" placeholder="Enter task title" autoComplete="new-password" />
             <label htmlFor="">Description</label>
-            <textarea onChange={(event) => setTaskData({ ...taskData, description: event.target.value })} name="description" placeholder="Enter task description" rows={5}></textarea>
+            <textarea onChange={(event) => setTaskData({ ...taskData, description: event.target.value })} 
+            name="description" placeholder="Enter task description" rows={5} autoComplete="new-password"></textarea>
             <button className="submit" onClick={handleAddTask}>Add New Task</button>
 
             {message && (
