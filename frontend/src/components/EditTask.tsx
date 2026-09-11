@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
 import '../style/addtask.css'
 import { useNavigate, useParams } from 'react-router-dom';
-
-interface Task {
-    Id: number;
-    Title: string;
-    Description: string;
-    IsCompleted: boolean;
-}
+import api from '../api/api';
 
 function EditTask() {
     const [taskData, setTaskData] = useState({
@@ -30,18 +24,17 @@ function EditTask() {
     const getTask = async () => {
         if (!id) return;
         try {
-            const response = await fetch(`http://localhost:5000/api/todos/${id}`);
+            const response = await api.get(`todos/${id}`);
+            //const response = await fetch(`http://localhost:5000/api/todos/${id}`);
 
-            if (!response.ok) {
+            if (!response.data) {
                 throw new Error("Failed to fetch task");
             }
 
-            const result: { success: boolean; data: Task } =
-                await response.json();
+            const result = response.data;
 
             setTaskData(result.data);
             console.log(result.data);
-
         }
         catch (error) {
             console.error(error);
@@ -66,27 +59,32 @@ function EditTask() {
         }
 
         try {
-
-            const response = await fetch(
-                `http://localhost:5000/api/todos/${id}`,
+            const response = await api.put(
+                `/todos/${id}`,
                 {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        Title: taskData.Title,
-                        Description: taskData.Description,
-                        IsCompleted: taskData.IsCompleted,
-                    }),
+                    Title: taskData.Title,
+                    Description: taskData.Description,
+                    IsCompleted: taskData.IsCompleted,
                 }
             );
 
-            const result = await response.json();
+            const result = response.data;
+            // const response = await fetch(
+            //     `http://localhost:5000/api/todos/${id}`,
+            //     {
+            //         method: "PUT",
+            //         headers: {
+            //             "Content-Type": "application/json"
+            //         },
+            //         body: JSON.stringify({
+            //             Title: taskData.Title,
+            //             Description: taskData.Description,
+            //             IsCompleted: taskData.IsCompleted,
+            //         }),
+            //     }
+            // );
 
-            if (!response.ok) {
-                throw new Error(result.message || "Update failed");
-            }
+            // const result = await response.json();
 
             if (result.success) {
                 setMessage('Task updated Successfully!');

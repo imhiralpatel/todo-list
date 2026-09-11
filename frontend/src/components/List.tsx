@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import '../style/list.css'
 import { Link } from "react-router-dom";
+import api from "../api/api";
 
 interface Task {
     Id: number;
@@ -62,9 +63,10 @@ function List() {
         try {
             await Promise.all(
                 selectedTask.map((id) =>
-                    fetch(`http://localhost:5000/api/todos/${id}`, {
-                        method: "DELETE",
-                    })
+                    api.delete(`/todos/${id}`)
+                    // fetch(`http://localhost:5000/api/todos/${id}`, {
+                    //     method: "DELETE",
+                    // })
                 )
             );
 
@@ -97,9 +99,14 @@ function List() {
     const getListData = async () => {
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:5000/api/todos");
 
-            const list: ApiResponse = await response.json();
+            const response = await api.get<ApiResponse>("/todos");
+
+            const list = response.data;
+
+            // const response = await fetch("http://localhost:5000/api/todos");
+
+            // const list: ApiResponse = await response.json();
 
             if (list.success) {
                 setTaskData(list.data);
@@ -129,11 +136,14 @@ function List() {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
-                method: 'delete'
-            });
+            const response = await api.delete(`/todos/${id}`);
 
-            const result = await response.json();
+            const result = response.data;
+            // const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
+            //     method: 'delete'
+            // });
+
+            // const result = await response.json();
 
             if (result.success) {
                 //// setTaskData(result.data);
@@ -216,7 +226,7 @@ function List() {
                             <button className="delete-item delete-selected" onClick={() => handleDeleteSelected()}>
                                 Delete Selected Records
                             </button>
-                            
+
                             <table>
                                 <thead>
                                     <tr>
@@ -249,7 +259,7 @@ function List() {
                                                 </td>
                                                 <td>{new Date(item.CreatedAt).toLocaleDateString()}</td>
                                                 <td>
-                                                    <Link to={"edit/" + item.Id} className="edit-item">Edit</Link>
+                                                    <Link to={"/edit/" + item.Id} className="edit-item">Edit</Link>
                                                     <button className="delete-item" onClick={() => deleteTask(item.Id)}>Delete</button>
                                                 </td>
                                             </tr>

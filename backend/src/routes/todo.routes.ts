@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { createTodoController, deleteAllTodosController, deleteTodoController, getTodoByIdController, getTodosController, updateTodoController } from "../controllers/todo.controller";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // POST /api/todos
-router.post("/", createTodoController);
+router.post("/", authMiddleware, createTodoController);
 
 // GET /api/todos
-router.get("/", getTodosController);
+router.get("/", authMiddleware, getTodosController);
 
 
 // SELECT SINGLE

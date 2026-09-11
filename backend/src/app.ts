@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { connectDB } from './config/db';
 import todoRoutes from "./routes/todo.routes";
+import authRoutes from "./routes/auth.routes";
 
 dotenv.config();
 
@@ -21,6 +22,10 @@ app.get("/", (req, resp)=>{
 })
 
 app.use("/api/todos", todoRoutes);
+app.use(
+  "/api/auth",
+  authRoutes
+);
 
 const startServer = async () => {
   try {
